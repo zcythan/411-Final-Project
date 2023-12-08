@@ -1,7 +1,7 @@
 import deeplake
-import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
+
 class dataLoader:
     def __init__(self):
         self.__trainSet = deeplake.load('hub://activeloop/liar-train')
