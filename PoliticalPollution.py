@@ -2,10 +2,13 @@ from dataLoader import dataLoader
 import lieDetector
 from uiLogic import uiLogic
 
+#Driver file
+
 def main():
-    dl = dataLoader()
     ui = uiLogic()
-    ui.updateUI()
+    #ui.updateUI()
+    dl = dataLoader()
+    ui.mainWindow()
 
 
 if __name__ == '__main__':
