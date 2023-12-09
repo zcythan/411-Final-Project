@@ -1,15 +1,20 @@
 import tkinter as tk
+import threading
 
 class uiLogic:
 
     def __init__(self):
         self.__var = 0
         self.window = tk.Tk()
-        self.prompt = tk.Label(self.window, text="Enter a statement from a political official to lie detect it")
+        self.prompt = tk.Label(self.window, text="Training Model, Please wait...")
         self.prompt.pack()
         self.text_box = tk.Text(self.window, height=10, width=50)
-        self.text_box.pack()
         self.submit_button = tk.Button(self.window, text="Submit", command=self.submit_text)
+
+    def mainWindow(self):
+        self.prompt = tk.Label(self.window, text="Enter a statement from a political official to lie detect it")
+        self.prompt.pack()
+        self.text_box.pack()
         self.submit_button.pack()
 
     def submit_text(self):
