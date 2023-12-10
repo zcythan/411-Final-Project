@@ -23,3 +23,11 @@ class uiLogic:
 
     def updateUI(self):
         self.window.mainloop()
+        
+    def update_after_data_load(self):
+        self.prompt.config(text="Enter a statement from a political official to lie detect it")
+        self.text_box.pack()
+        self.submit_button.pack()
+        
+    def schedule_update(self, func, *args):
+        self.window.after(0, func, *args)
