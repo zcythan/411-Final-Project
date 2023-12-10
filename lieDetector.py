@@ -7,6 +7,7 @@ class lieDetector:
         #code to load in model here
         placeholder = 0
 
-    def predict(self):
+    def predict(self, text): # add in a parameter for the text to be predicted
         #Does prediction based on data
         placeholder = 0
+        return placeholder
