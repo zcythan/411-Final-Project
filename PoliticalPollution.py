@@ -1,5 +1,5 @@
 from dataLoader import dataLoader
-import lieDetector
+from lieDetector import lieDetector
 from uiLogic import uiLogic
 import threading
 from threading import Lock
@@ -22,7 +22,8 @@ def check_data_and_update_ui(shared_data, ui):
 
 def main():
     shared_data = {}
-    ui = uiLogic()
+    detect = lieDetector()
+    ui = uiLogic(detect)
     
     data_thread = threading.Thread(target=dataLoad, args=(shared_data, lock))
     data_thread.start()
