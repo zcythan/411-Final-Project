@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 class dataLoader:
     def __init__(self):
-        self.__trainSet = deeplake.load('hub://activeloop/liar-train')
+        self.__trainSet = deeplake.load('hub://activeloop/liar-train', reset=True)
         self.preload()
 
     def preload(self):
