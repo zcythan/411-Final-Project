@@ -15,15 +15,19 @@ nltk.download('stopwords')
 
 # Load English stopwords
 stop_words = set(stopwords.words('english'))
+
+
 class lieDetector:
     def __init__(self):
         data_loader = dataLoader()
         print('Data loaded')
         self.vectorizer = TfidfVectorizer()
         # Extract features and labels from training, test, and validation sets
-        value_train, labels_train = self.extract(data_loader.packedTrain, fit = True)
-        value_test, labels_test = self.extract(data_loader.packedTest, fit = False)
-        #value_valid, labels_valid = self.extract(data_loader.packedValid)
+        value_train, labels_train = self.extract(
+            data_loader.packedTrain, fit=True)
+        value_test, labels_test = self.extract(
+            data_loader.packedTest, fit=False)
+        # value_valid, labels_valid = self.extract(data_loader.packedValid)
 
         print('Extraction complete')
         print("Training Model")
@@ -32,12 +36,11 @@ class lieDetector:
         self.model.fit(value_train, labels_train)
 
         # Predict and evaluate
-        #predictions = self.model.predict(value_test)
+        # predictions = self.model.predict(value_test)
         # ... evaluate predictions ...
         # Calculate accuracy on the test set
         accuracy = self.model.score(value_test, labels_test)
         print("Accuracy on test set:", accuracy)
-
 
     def predict(self, inputs):
         processed_input = ' '.join(
@@ -54,8 +57,9 @@ class lieDetector:
         print("Predicting for: " + inputs)
         prediction = self.model.predict(vectorized_statement_array)
         print(prediction[0])
+        return "False" if prediction[0] == 0 else "Completely True"
 
-    def extract(self, mode, fit = False):
+    def extract(self, mode, fit=False):
         text_data = []
         numerical_data = []
         labels = []
@@ -76,7 +80,7 @@ class lieDetector:
                     elif dictionary['label'] == 5:
                         dictionary['label'] = 2
             '''
-            #Binary classification:
+            # Binary classification:
             if 'label' in dictionary:
                 if fit == False:
                     if dictionary['label'] == 0:
@@ -94,7 +98,6 @@ class lieDetector:
                     dictionary['label'] = 0
                 elif dictionary['label'] in [2, 3]:
                     dictionary['label'] = 1
-
 
                 labels.append(dictionary.pop('label'))
 
@@ -116,8 +119,8 @@ class lieDetector:
             numerical_data.append(num_values)
 
         # Vectorize text data
-        #vectorizer = TfidfVectorizer()
-        #tfidf_matrix = vectorizer.fit_transform(text_data)
+        # vectorizer = TfidfVectorizer()
+        # tfidf_matrix = vectorizer.fit_transform(text_data)
         if fit:
             tfidf_matrix = self.vectorizer.fit_transform(text_data)
         else:
@@ -127,11 +130,9 @@ class lieDetector:
         numerical_data_df = pd.DataFrame(numerical_data).fillna(0)
 
         # Ensure all data is numeric
-        numerical_data_df = numerical_data_df.apply(pd.to_numeric, errors='coerce').fillna(0)
+        numerical_data_df = numerical_data_df.apply(
+            pd.to_numeric, errors='coerce').fillna(0)
         # Combine vectorized text data with scaled numerical data
         combined_features = hstack([tfidf_matrix, numerical_data_df])
 
         return tfidf_matrix.toarray(), np.array(labels)
-
-
-

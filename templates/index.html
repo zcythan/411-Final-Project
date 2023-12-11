@@ -33,8 +33,8 @@
 
             <label for="state">State:</label>
             <select id="state" name="state">
-              {% for state_code, state_name in states.items() %}
-              <option value="{{ state_code }}" {% if input['state'] == state_code %}selected{% endif %}>
+              {% for state_name in states %}
+              <option value="{{ state_name }}" {% if input['state'] == state_name %}selected{% endif %}>
                 {{ state_name }}
               </option>
               {% endfor %}
