@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='main.css') }}"
+    />
+  </head>
+  <body>
+    <div id="loadingSpinner" class="overlay">
+      <div class="spinner"></div>
+    </div>
+    <div class="container">
+      <h1>{{ title }}</h1>
+      <div class="content">
+        <div class="input-section">
+          <form action="/" method="post">
+            <label for="statement">Political Statement:</label>
+            <textarea id="statement" name="statement" required>
+{{ input['statement'] }}</textarea
+            >
+
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" value = "{{ input['subject'] }}" required />
+
+            <label for="jobTitle">Job Title:</label>
+            <input type="text" id="jobTitle" name="jobTitle" value = "{{ input['jobTitle'] }}" required />
+
+            <label for="context">Context:</label>
+            <input type="text" id="context" name="context" value = "{{ input['context'] }}" required />
+
+            <label for="state">State:</label>
+            <select id="state" name="state">
+              {% for state_code, state_name in states.items() %}
+              <option value="{{ state_code }}" {% if input['state'] == state_code %}selected{% endif %}>
+                {{ state_name }}
+              </option>
+              {% endfor %}
+            </select>
+
+            <label for="party">Political Party:</label>
+            <select id="party" name="party">
+              <option value="Republican" {% if input['party'] == 'Republican' %} selected {% endif %}>Republican</option>
+              <option value="Democrat" {% if input['party'] == 'Democrat' %} selected {% endif %}>Democrat</option>
+            </select>
+
+            <input type="submit" id="script" name="submit" value="Submit" />
+          </form>
+        </div>
+        {% if result == "Super False" %}
+        <div class="output-section super-false">{{ result }}</div>
+        {% elif result == "Barely True" %}
+        <div class="output-section barely-true">{{ result }}</div>
+        {% elif result == "Half-True" %}
+        <div class="output-section half-true">{{ result }}</div>
+        {% elif result == "Mostly-True" %}
+        <div class="output-section mostly-true">{{ result }}</div>
+        {% elif result == "Completely True" %}
+        <div class="output-section completely-true">{{ result }}</div>
+        {% elif result == "False" %}
+        <div class="output-section false">{{ result }}</div>
+        {% else %}
+        <div class="output-section"></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      document.querySelector('form').onsubmit = function() {
+        document.getElementById('loadingSpinner').style.display = 'flex';
+      };
+      </script>
+
+  </body>
+</html>
