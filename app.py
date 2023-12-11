@@ -2,7 +2,6 @@ from flask import Flask, render_template, redirect, url_for, request
 from lieDetector import lieDetector
 
 aimod = lieDetector()
-
 app = Flask(__name__)
 
 
@@ -15,10 +14,11 @@ def index():
     if request.method == "POST":
         input['statement'] = request.form['statement']
         input['subject'] = request.form['subject']
+        input['speaker'] = request.form['speaker']
         input['jobTitle'] = request.form['jobTitle']
-        input['context'] = request.form['context']
         input['state'] = request.form['state']
         input['party'] = request.form['party']
+        input['context'] = request.form['context']
 
         if input['statement'] != "":
             string_input = ""

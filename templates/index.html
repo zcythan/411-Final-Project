@@ -19,11 +19,13 @@
           <form action="/" method="post">
             <label for="statement">Political Statement:</label>
             <textarea id="statement" name="statement" required>
-{{ input['statement'] }}</textarea
-            >
+{{ input['statement'] }}</textarea>
 
             <label for="subject">Subject:</label>
             <input type="text" id="subject" name="subject" value = "{{ input['subject'] }}" required />
+
+               <label for="speaker">Speaker:</label>
+            <input type="text" id="speaker" name="speaker" value = "{{ input['speaker'] }}" required />
 
             <label for="jobTitle">Job Title:</label>
             <input type="text" id="jobTitle" name="jobTitle" value = "{{ input['jobTitle'] }}" required />
@@ -44,6 +46,7 @@
             <select id="party" name="party">
               <option value="Republican" {% if input['party'] == 'Republican' %} selected {% endif %}>Republican</option>
               <option value="Democrat" {% if input['party'] == 'Democrat' %} selected {% endif %}>Democrat</option>
+                <option value="None" {% if input['party'] == 'None' %} selected {% endif %}>None</option>
             </select>
 
             <input type="submit" id="script" name="submit" value="Submit" />
@@ -58,9 +61,9 @@
         {% elif result == "Mostly-True" %}
         <div class="output-section mostly-true">{{ result }}</div>
         {% elif result == "Completely True" %}
-        <div class="output-section completely-true">{{ result }}</div>
+        <div class="output-section This statement is likely truthful.">{{ result }}</div>
         {% elif result == "False" %}
-        <div class="output-section false">{{ result }}</div>
+        <div class="output-section This statement is likely falsified.">{{ result }}</div>
         {% else %}
         <div class="output-section"></div>
         {% endif %}
