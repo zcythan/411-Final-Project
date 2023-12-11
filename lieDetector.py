@@ -23,25 +23,28 @@ class lieDetector:
         # Extract features and labels from training, test, and validation sets
         value_train, labels_train = self.extract(data_loader.packedTrain, fit = True)
         value_test, labels_test = self.extract(data_loader.packedTest, fit = False)
-        value_valid, labels_valid = self.extract(data_loader.packedValid)
+        #value_valid, labels_valid = self.extract(data_loader.packedValid)
 
         print('Extraction complete')
         print("Training Model")
+
         self.model = RandomForestClassifier()
         self.model.fit(value_train, labels_train)
 
         # Predict and evaluate
-        predictions = self.model.predict(value_test)
+        #predictions = self.model.predict(value_test)
         # ... evaluate predictions ...
         # Calculate accuracy on the test set
         accuracy = self.model.score(value_test, labels_test)
         print("Accuracy on test set:", accuracy)
+
 
     def predict(self, inputs):
         processed_input = ' '.join(
             word.lower() for word in inputs.split() if word.lower() not in stop_words)
 
         # Transform the processed_input using the vectorizer
+
         vectorized_statement = self.vectorizer.transform([processed_input])
 
         # Convert the result of transform to a dense array
@@ -58,7 +61,41 @@ class lieDetector:
         labels = []
 
         for dictionary in mode:
+            '''
+            #Normal classification
             if 'label' in dictionary:
+                if fit == False:
+                    if dictionary['label'] == 0:
+                        dictionary['label'] = 3
+                    elif dictionary['label'] == 1:
+                        dictionary['label'] = 0
+                    elif dictionary['label'] == 2:
+                        dictionary['label'] = 1
+                    elif dictionary['label'] == 3:
+                        dictionary['label'] = 5
+                    elif dictionary['label'] == 5:
+                        dictionary['label'] = 2
+            '''
+            #Binary classification:
+            if 'label' in dictionary:
+                if fit == False:
+                    if dictionary['label'] == 0:
+                        dictionary['label'] = 3
+                    elif dictionary['label'] == 1:
+                        dictionary['label'] = 0
+                    elif dictionary['label'] == 2:
+                        dictionary['label'] = 1
+                    elif dictionary['label'] == 3:
+                        dictionary['label'] = 5
+                    elif dictionary['label'] == 5:
+                        dictionary['label'] = 2
+
+                if dictionary['label'] in [0, 1, 4, 5]:
+                    dictionary['label'] = 0
+                elif dictionary['label'] in [2, 3]:
+                    dictionary['label'] = 1
+
+
                 labels.append(dictionary.pop('label'))
 
             # Extract text and numerical data separately

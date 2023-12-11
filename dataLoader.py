@@ -14,25 +14,25 @@ class dataLoader:
 
         train_thread = threading.Thread(target=self.load, args=('train',))
         test_thread = threading.Thread(target=self.load, args=('test',))
-        valid_thread = threading.Thread(target=self.load, args=('valid',))
+        #valid_thread = threading.Thread(target=self.load, args=('valid',))
 
         train_thread.start()
         test_thread.start()
-        valid_thread.start()
+        #valid_thread.start()
         train_thread.join()
         test_thread.join()
-        valid_thread.join()
+        #valid_thread.join()
 
         train_thread = threading.Thread(target=self.preload, args=(self.__trainSet, 'train'))
         test_thread = threading.Thread(target=self.preload, args=(self.__testSet, 'test'))
-        valid_thread = threading.Thread(target=self.preload, args=(self.__validSet, 'valid'))
+        #valid_thread = threading.Thread(target=self.preload, args=(self.__validSet, 'valid'))
 
         train_thread.start()
         test_thread.start()
-        valid_thread.start()
+        #valid_thread.start()
         train_thread.join()
         test_thread.join()
-        valid_thread.join()
+        #valid_thread.join()
         
 
         print("Storing")
