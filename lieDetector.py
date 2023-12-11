@@ -1,5 +1,4 @@
 from dataLoader import dataLoader
-from transformers import BertTokenizer, BertForSequenceClassification, AdamW, get_linear_schedule_with_warmup
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
 import numpy as np
@@ -44,21 +43,20 @@ class lieDetector:
         accuracy = self.model.score(value_test, labels_test)
         print("Accuracy on test set:", accuracy)
 
-
     def predict(self, inputs):
-        def predict(self, inputs):
-            processed_input = ' '.join(
-                word.lower() for word in inputs.split() if word.lower() not in stop_words)
+        processed_input = ' '.join(
+            word.lower() for word in inputs.split() if word.lower() not in stop_words)
 
-            # Transform the processed_input using the vectorizer
-            vectorized_statement = self.vectorizer.transform([processed_input])
+        # Transform the processed_input using the vectorizer
+        vectorized_statement = self.vectorizer.transform([processed_input])
 
-            # Convert the result of transform to a dense array
-            vectorized_statement_array = vectorized_statement.toarray()
+        # Convert the result of transform to a dense array
+        vectorized_statement_array = vectorized_statement.toarray()
 
-            # Use the dense array for prediction
-            prediction = self.model.predict(vectorized_statement_array)
-            print(prediction[0])
+        # Use the dense array for prediction
+        print("Predicting for: " + inputs)
+        prediction = self.model.predict(vectorized_statement_array)
+        print(prediction[0])
 
     def extract(self, mode, fit = False):
         text_data = []
