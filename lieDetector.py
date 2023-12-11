@@ -3,69 +3,71 @@ from transformers import BertTokenizer, BertForSequenceClassification, AdamW, ge
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
 import numpy as np
-
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.model_selection import train_test_split
+import pandas as pd
 
 class lieDetector:
     def __init__(self):
         data_loader = dataLoader()
-        print()
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-        self.model = BertForSequenceClassification.from_pretrained('bert-base-uncased')
+        print('loaded')
 
-        # Initialize dataLoader
-        self.train_data = self.preprocess(data_loader.packedTrain)
-        self.test_data = self.preprocess(data_loader.packedTest)
-        self.valid_data = self.preprocess(data_loader.packedValid)
+        value_train, labels_train = self.extract(data_loader.packedTrain)
+        value_test, labels_test = self.extract(data_loader.packedTest)
+        value_valid, labels_valid= self.extract(data_loader.packedValid)
 
-    def preprocess(self, data):
-        # Convert the data to the format required by BERT
-        input_ids = []
-        attention_masks = []
+        value_train = np.asarray(value_train)
+        value_test = np.asarray(value_test)
+
+        print('extraction complete')
+
+        nb = MultinomialNB()
+        nb.fit(value_train, labels_train.values.ravel())  # Use values.ravel() to avoid shape mismatch
+
+        # Predict on the test set
+        predictions = nb.predict(value_test)
+
+        # Evaluate the accuracy or other metrics
+        accuracy = nb.score(value_test, labels_test)
+        print("Accuracy of Naive Bayes Classifier:", accuracy * 100)
+
+        #X_train, X_test, Y_train, Y_test = train_test_split(tfidf_matrix,y_df, random_state=2)
+        #nb = MultinomialNB()
+        #nb.fit(X_train, Y_train)
+        #Accuracy_NB = nb.score(X_test, Y_test)
+        #print(Accuracy_NB*100)
+
+    def extract(self, mode):
+        text_data = []
+        numerical_data = []
         labels = []
 
-        for item in data:
-            encoded_dict = self.tokenizer.encode_plus(
-                item['statement'],  # Input text
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                max_length=64,  # Pad & truncate all sentences
-                pad_to_max_length=True,
-                return_attention_mask=True,  # Construct attention masks
-                return_tensors='pt',  # Return pytorch tensors
-            )
+        for dictionary in mode:
+            if 'label' in dictionary: 
+                labels.append(dictionary['label'])  
+                del dictionary['label'] 
 
-            input_ids.append(encoded_dict['input_ids'])
-            attention_masks.append(encoded_dict['attention_mask'])
-            labels.append(item['label'])  # Assuming 'label' is the key for labels in your dataset
+        df = pd.DataFrame(mode)
+        y_df = pd.DataFrame(labels);
 
-        # Convert lists to tensors
-        input_ids = torch.cat(input_ids, dim=0)
-        attention_masks = torch.cat(attention_masks, dim=0)
-        labels = torch.tensor(labels)
+        text_columns = ["statement", "subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
+        numerical_columns = df.columns.difference(text_columns)
 
-        return TensorDataset(input_ids, attention_masks, labels)
+        text_data = df[text_columns].agg(' '.join, axis=1)
 
-    def train(self, epochs=4, batch_size=32):
-        # Create DataLoader for training data
-        train_dataloader = DataLoader(self.train_data, batch_size=batch_size, shuffle=True)
+        vectorizer = TfidfVectorizer()
+        tfidf_matrix = vectorizer.fit_transform(text_data)
 
-        # Setup optimizer and scheduler
-        optimizer = AdamW(self.model.parameters(), lr=2e-5, eps=1e-8)
-        total_steps = len(train_dataloader) * epochs
-        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
+        numerical_data_df = df[numerical_columns].fillna(0)  # Replace NaNs with 0 or any other suitable value
+        numerical_data_array = numerical_data_df.to_numpy()
 
-        # Training loop
-        self.model.train()
-        for epoch in range(epochs):
-            for step, batch in enumerate(train_dataloader):
-                b_input_ids, b_input_mask, b_labels = batch
-                self.model.zero_grad()
-                outputs = self.model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)
-                loss = outputs[0]
-                loss.backward()
-                optimizer.step()
-                scheduler.step()
+        tfidf_dense = tfidf_matrix.todense()
+        combined_features = np.hstack((tfidf_dense, numerical_data_array))
 
-        print("Training complete")
+        print('data extracted')
+        return combined_features, y_df
 
     def predict(self, text):
         # Prediction on text
