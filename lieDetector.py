@@ -1,16 +1,10 @@
 from dataLoader import dataLoader
-import torch
-from torch.utils.data import DataLoader, TensorDataset, random_split
-import numpy as np
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
 from scipy.sparse import hstack
 import numpy as np
 import nltk
