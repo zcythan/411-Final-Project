@@ -2,14 +2,14 @@ import tkinter as tk
 
 class uiLogic:
 
-    def __init__(self, lieDetector):
+    def __init__(self):
         self.__var = 0
         self.window = tk.Tk()
-        self.prompt = tk.Label(self.window, text="Training Model, Please wait...")
+        self.prompt = tk.Label(self.window, text="Training Model, (May take up to 5 Minutes)...")
         self.prompt.pack()
         self.text_box = tk.Text(self.window, height=10, width=50)
         self.submit_button = tk.Button(self.window, text="Submit", command=self.submit_text)
-        self.lie_detector = lieDetector
+        #self.lie_detector = lieDetector
 
     def mainWindow(self):
         self.prompt = tk.Label(self.window, text="Enter a statement from a political official to lie detect it")
