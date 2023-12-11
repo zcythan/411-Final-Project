@@ -8,96 +8,101 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import train_test_split
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+from scipy.sparse import hstack
+import numpy as np
+import nltk
+from nltk.corpus import stopwords
 
+# Download stopwords
+nltk.download('stopwords')
+
+# Load English stopwords
+stop_words = set(stopwords.words('english'))
 class lieDetector:
     def __init__(self):
         data_loader = dataLoader()
-        print('loaded')
+        print('Data loaded')
+        self.vectorizer = TfidfVectorizer()
+        # Extract features and labels from training, test, and validation sets
+        value_train, labels_train = self.extract(data_loader.packedTrain, fit = True)
+        value_test, labels_test = self.extract(data_loader.packedTest, fit = False)
+        value_valid, labels_valid = self.extract(data_loader.packedValid)
 
-        value_train, labels_train = self.extract(data_loader.packedTrain)
-        value_test, labels_test = self.extract(data_loader.packedTest)
-        value_valid, labels_valid= self.extract(data_loader.packedValid)
+        print('Extraction complete')
+        print("Training Model")
+        self.model = RandomForestClassifier()
+        self.model.fit(value_train, labels_train)
 
-        value_train = np.asarray(value_train)
-        value_test = np.asarray(value_test)
+        # Predict and evaluate
+        predictions = self.model.predict(value_test)
+        # ... evaluate predictions ...
+        # Calculate accuracy on the test set
+        accuracy = self.model.score(value_test, labels_test)
+        print("Accuracy on test set:", accuracy)
 
-        print('extraction complete')
 
-        nb = MultinomialNB()
-        nb.fit(value_train, labels_train.values.ravel())  # Use values.ravel() to avoid shape mismatch
+    def predict(self, inputs):
+        def predict(self, inputs):
+            processed_input = ' '.join(
+                word.lower() for word in inputs.split() if word.lower() not in stop_words)
 
-        # Predict on the test set
-        predictions = nb.predict(value_test)
+            # Transform the processed_input using the vectorizer
+            vectorized_statement = self.vectorizer.transform([processed_input])
 
-        # Evaluate the accuracy or other metrics
-        accuracy = nb.score(value_test, labels_test)
-        print("Accuracy of Naive Bayes Classifier:", accuracy * 100)
+            # Convert the result of transform to a dense array
+            vectorized_statement_array = vectorized_statement.toarray()
 
-        #X_train, X_test, Y_train, Y_test = train_test_split(tfidf_matrix,y_df, random_state=2)
-        #nb = MultinomialNB()
-        #nb.fit(X_train, Y_train)
-        #Accuracy_NB = nb.score(X_test, Y_test)
-        #print(Accuracy_NB*100)
+            # Use the dense array for prediction
+            prediction = self.model.predict(vectorized_statement_array)
+            print(prediction[0])
 
-    def extract(self, mode):
+    def extract(self, mode, fit = False):
         text_data = []
         numerical_data = []
         labels = []
 
         for dictionary in mode:
-            if 'label' in dictionary: 
-                labels.append(dictionary['label'])  
-                del dictionary['label'] 
+            if 'label' in dictionary:
+                labels.append(dictionary.pop('label'))
 
-        df = pd.DataFrame(mode)
-        y_df = pd.DataFrame(labels);
+            # Extract text and numerical data separately
+                # Extract and preprocess text data
+                text_values = ' '.join(str(dictionary[key]) for key in
+                                       ["statement", "subject", "speaker", "job_title", "state_info",
+                                        "party_affiliation", "context"] if key in dictionary)
 
-        text_columns = ["statement", "subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
-        numerical_columns = df.columns.difference(text_columns)
+                # Lowercase and remove stopwords
+                processed_text = ' '.join(
+                    word.lower() for word in text_values.split() if word.lower() not in stop_words)
 
-        text_data = df[text_columns].agg(' '.join, axis=1)
+                text_data.append(processed_text)
 
-        vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform(text_data)
+            num_keys = ["barely_true_counts", "false_counts", "half_true_counts", "mostly_true_counts",
+                        "pants_onfire_counts"]
+            num_values = {key: dictionary.get(key, 0) for key in num_keys}
+            numerical_data.append(num_values)
 
-        numerical_data_df = df[numerical_columns].fillna(0)  # Replace NaNs with 0 or any other suitable value
-        numerical_data_array = numerical_data_df.to_numpy()
+        # Vectorize text data
+        #vectorizer = TfidfVectorizer()
+        #tfidf_matrix = vectorizer.fit_transform(text_data)
+        if fit:
+            tfidf_matrix = self.vectorizer.fit_transform(text_data)
+        else:
+            tfidf_matrix = self.vectorizer.transform(text_data)
 
-        tfidf_dense = tfidf_matrix.todense()
-        combined_features = np.hstack((tfidf_dense, numerical_data_array))
+        # Scale numerical data
+        numerical_data_df = pd.DataFrame(numerical_data).fillna(0)
 
-        print('data extracted')
-        return combined_features, y_df
+        # Ensure all data is numeric
+        numerical_data_df = numerical_data_df.apply(pd.to_numeric, errors='coerce').fillna(0)
+        # Combine vectorized text data with scaled numerical data
+        combined_features = hstack([tfidf_matrix, numerical_data_df])
 
-    def predict(self, text):
-        # Prediction on text
-        self.model.eval()
-        with torch.no_grad():
-            encoded_dict = self.tokenizer.encode_plus(
-                text, add_special_tokens=True, max_length=64, pad_to_max_length=True, return_attention_mask=True,
-                return_tensors='pt')
-            input_ids = encoded_dict['input_ids']
-            attention_mask = encoded_dict['attention_mask']
-            outputs = self.model(input_ids, token_type_ids=None, attention_mask=attention_mask)
-            logits = outputs[0]
-            index = logits.argmax()
-
-        return index.item()
+        return tfidf_matrix.toarray(), np.array(labels)
 
 
-''' 
-def __init__(self):
-    self.__var = 0
-    data = dataLoader()
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    model = BertForSequenceClassification.from_pretrained('bert-base-uncased')
 
-def load(self):
-    #code to load in model here
-    placeholder = 0
-
-def predict(self, text): # add in a parameter for the text to be predicted
-    #Does prediction based on data
-    placeholder = 0
-    return placeholder
-    '''

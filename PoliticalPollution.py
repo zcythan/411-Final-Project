@@ -69,6 +69,7 @@ def main():
     #detect = lieDetector()
     ui = uiLogic()
     aimod = lieDetector()
+    aimod.predict("Says the Annies List political group supports third-trimester abortions on demand. abortion dwayne-bohac Texas republican")
     #data_thread = threading.Thread(target=dataLoad, args=(shared_data, lock))
     #data_thread.start()
     

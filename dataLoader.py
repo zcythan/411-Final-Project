@@ -50,6 +50,10 @@ class dataLoader:
         result = self.preload(arg)
         self.results_queue.put(result)
 
+    def preprocess_text(self, text):
+        # Lowercase and remove stopwords
+        return ' '.join(word.lower() for word in text.split() if word.lower() not in stop_words)
+
     def preload(self, dataset, type):
         print("Packaging...")
         data_list = []
