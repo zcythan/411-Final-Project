@@ -33,6 +33,8 @@ class dataLoader:
         train_thread.join()
         test_thread.join()
         valid_thread.join()
+        
+
         print("Storing")
         print("Data stored")
 
@@ -51,7 +53,7 @@ class dataLoader:
     def preload(self, dataset, type):
         print("Packaging...")
         data_list = []
-        tensorList = ["id", "label", "statement", "subject", "speaker", "job_title", "state_info", "party_affiliation",
+        tensorList = ["label", "statement", "subject", "speaker", "job_title", "state_info", "party_affiliation",
                       "barely_true_counts", "false_counts", "half_true_counts", "mostly_true_counts", "pants_onfire_counts", "context"]
         for sample in dataset:
             sample_dict = {}
