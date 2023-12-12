@@ -14,46 +14,68 @@ class lieDetector:
         # Extract features and labels from training, test, and validation sets
         # value_valid, labels_valid = self.extract(data_loader.packedValid)
         self.stopWords = set(stopwords.words('english'))
-        modelFile = 'trained-Model.joblib'
-        vectFile = 'vectorizer.joblib'
-        if os.path.exists(modelFile) and os.path.exists(vectFile):
+
+        binmodelFile = 'trained-ModelBin.joblib'
+        sixmodelFile = 'trained-ModelSix.joblib'
+        binVectFile = 'vectorizerBin.joblib'
+        sixVectFile = 'vectorizerSix.joblib'
+        if os.path.exists(binmodelFile) and os.path.exists(binVectFile) and os.path.exists(sixmodelFile) and os.path.exists(binmodelFile):
             # Load the model
-            self.vectorizer = load(vectFile)
-            self.model = load(modelFile)
+            self.binVectorizer = load(binVectFile)
+            self.binModel = load(binmodelFile)
+            self.sixModel = load(sixmodelFile)
+            self.sixVectorizer = load(sixVectFile)
         else:
             # Train and save the model
             print("AI agent or Vectorizer Files are missing, creating them now...")
             print("This may take up to 5 minutes.")
-            self.vectorizer = TfidfVectorizer()
-            self.dl = dataLoader(True)
-            value_train = self.vectorizer.fit_transform(self.dl.packedTrain)
-            value_test = self.vectorizer.transform(self.dl.packedTest)
-            self.model = RandomForestClassifier()
+            self.binVectorizer = TfidfVectorizer()
+            self.sixVectorizer = TfidfVectorizer()
+            self.bindl = dataLoader(True)  # Change this false to run 6 label classification.
+            self.sixdl = dataLoader(False)
+
+            binValue_train = self.binVectorizer.fit_transform(self.bindl.packedTrain)
+            binValue_test = self.binVectorizer.transform(self.bindl.packedTest)
+            sixValue_train = self.binVectorizer.fit_transform(self.sixdl.packedTrain)
+            sixValue_test = self.binVectorizer.transform(self.sixdl.packedTest)
+            self.binModel = RandomForestClassifier()
+            self.sixModel = RandomForestClassifier()
             print('Data loaded')
             print('Extraction complete')
             print("Training Model")
-            self.model.fit(value_train, np.array(self.dl.trainLabels))
-            accuracy = self.model.score(value_test, np.array(self.dl.testLabels))
-            print("Accuracy on test set:", accuracy)
-            dump(self.model, 'trained-Model.joblib')
-            dump(self.vectorizer, 'vectorizer.joblib')
+            self.binModel.fit(binValue_train, np.array(self.bindl.trainLabels))
+            self.sixModel.fit(sixValue_train, np.array(self.sixdl.trainLabels))
+            accuracy = self.binModel.score(binValue_test, np.array(self.bindl.testLabels))
+            print("Accuracy on binary test set:", accuracy)
+            accuracy = self.sixModel.score(sixValue_test, np.array(self.sixdl.testLabels))
+            print("Accuracy on six-way test set:", accuracy)
+            dump(self.binModel, binmodelFile)
+            dump(self.sixModel, sixmodelFile)
+            dump(self.binVectorizer, binVectFile)
+            dump(self.sixVectorizer, sixVectFile)
 
 
-    def predict(self, inputs):
+    def predict(self, inputs, binary):
         processed_input = ' '.join(
             word.lower() for word in inputs.split() if word.lower() not in self.stopWords)
 
-        # Transform the processed_input using the vectorizer
-        featStatement = self.vectorizer.transform([processed_input])
+        if binary:
+            featStatement = self.binVectorizer.transform([processed_input])
+            featVecs = featStatement.toarray()
 
-        # Convert the result of transform to a dense array
-        featVecs = featStatement.toarray()
+            print("Predicting for: " + inputs)
+            prediction = self.binModel.predict(featVecs)
+            print(prediction[0])
+            return "This statement is likely falsified." if prediction[0] == 0 else "This statement is likely truthful."
+        else:
+            featStatement = self.sixVectorizer.transform([processed_input])
 
-        # Use the dense array for prediction
-        print("Predicting for: " + inputs)
-        prediction = self.model.predict(featVecs)
-        print(prediction[0])
-        return "This statement is likely falsified." if prediction[0] == 0 else "This statement is likely truthful."
+            featVecs = featStatement.toarray()
+            
+            print("Predicting for: " + inputs)
+            prediction = self.sixModel.predict(featVecs)
+            print(prediction[0])
+            return prediction[0]
 
 
 

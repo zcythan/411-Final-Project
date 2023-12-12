@@ -244,3 +244,4 @@ WSD.test.out
 tank.test.out
 *.out
 
+trained-ModelSix.joblib
