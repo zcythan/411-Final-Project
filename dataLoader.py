@@ -43,8 +43,8 @@ class dataLoader:
     def preload(self, dataset, type):
         print("Packaging...")
 
-        data_list = []
-        data_labels = []
+        dataList = []
+        dataLabels = []
 
         #Keys being used for training
         keys = ["statement", "subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
@@ -52,7 +52,10 @@ class dataLoader:
         for sample in dataset:
             strings = []
 
-            # Adjust the label scheme if it's dealing with the train data, convert all labels to binary classification
+            # Adjust the label scheme if it's dealing with the test data, convert all labels to binary classification if needed
+            #For whatever the reason, the numerical representations for true and false do not correlate between
+            #the testing set and the training set. This was written to remap based on the observed difference between the two,
+            #and it seems to work quite nicely.
             if 'label' in sample:
                 label = sample['label'].numpy().item()
                 if type == 'test':
@@ -69,39 +72,37 @@ class dataLoader:
                 # Apply binary classification conversion
                 if self.classify:
                     if label in [0, 1, 4, 5]:
-                        data_labels.append(0)
+                        dataLabels.append(0)
                     elif label in [2, 3]:
-                        data_labels.append(1)
+                        dataLabels.append(1)
                 else:
-                    data_labels.append(label)
+                    dataLabels.append(label)
 
             # Loop through the keys in the dataset to pick out the needed features.
             for key in keys:
                 if key in sample:
                     tensor = sample[key]
 
-                    # Convert tensor to NumPy array then to standard array
-                    np_tensor = tensor.numpy()
-                    if np_tensor.ndim == 1 and np_tensor.size == 1:  # Single element
-                        text = str(np_tensor.item())
+                    # Convert tensor to NumPy array
+                    nptensor = tensor.numpy()
+                    if nptensor.ndim == 1 and nptensor.size == 1:  # Single element
+                        text = str(nptensor.item())
                     else:  # Array of elements or a single value as array
-                        text = str(np_tensor.tolist())
+                        text = str(nptensor.tolist())
 
                     # move to lowercase and remove stopword, this boosted accuracy by about 2%
-                    processed_text = ' '.join(
-                        word.lower() for word in text.split() if word.lower() not in self.stop_words)
-
-                    strings.append(processed_text)
+                    processedText = ' '.join(word.lower() for word in text.split() if word.lower() not in self.stop_words)
+                    strings.append(processedText)
 
                 # build the strings
-            concatenated_string = ' '.join(strings)
-            data_list.append(concatenated_string)
+            concatString = ' '.join(strings)
+            dataList.append(concatString)
         print("Fully Packed")
         if type == 'train':
-            self.packedTrain = data_list
-            self.trainLabels = data_labels
+            self.packedTrain = dataList
+            self.trainLabels = dataLabels
         elif type == 'test':
-            self.packedTest = data_list
-            self.testLabels = data_labels
+            self.packedTest = dataList
+            self.testLabels = dataLabels
 
 
