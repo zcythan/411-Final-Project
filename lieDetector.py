@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 
+
 class lieDetector:
     def __init__(self):
         # Extract features and labels from training, test, and validation sets

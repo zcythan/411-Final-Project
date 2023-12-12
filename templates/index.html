@@ -52,18 +52,10 @@
             <input type="submit" id="script" name="submit" value="Submit" />
           </form>
         </div>
-        {% if result == "Super False" %}
-        <div class="output-section super-false">{{ result }}</div>
-        {% elif result == "Barely True" %}
-        <div class="output-section barely-true">{{ result }}</div>
-        {% elif result == "Half-True" %}
-        <div class="output-section half-true">{{ result }}</div>
-        {% elif result == "Mostly-True" %}
-        <div class="output-section mostly-true">{{ result }}</div>
-        {% elif result == "This statement is likely truthful" %}
-        <div class="output-section This statement is likely truthful.">{{ result }}</div>
-        {% elif result == "This statement is likely falsified." %}
-        <div class="output-section This statement is likely falsified.">{{ result }}</div>
+        {% if result == 0 %}
+        <div class="output-section truthful">This statement is likely truthful.</div>
+        {% elif result == 1 %}
+        <div class="output-section falsified">This statement is likely falsified.</div>
         {% else %}
         <div class="output-section"></div>
         {% endif %}
