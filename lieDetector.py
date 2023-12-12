@@ -37,8 +37,8 @@ class lieDetector:
 
             binValue_train = self.binVectorizer.fit_transform(self.bindl.packedTrain)
             binValue_test = self.binVectorizer.transform(self.bindl.packedTest)
-            sixValue_train = self.binVectorizer.fit_transform(self.sixdl.packedTrain)
-            sixValue_test = self.binVectorizer.transform(self.sixdl.packedTest)
+            sixValue_train = self.sixVectorizer.fit_transform(self.sixdl.packedTrain)
+            sixValue_test = self.sixVectorizer.transform(self.sixdl.packedTest)
             self.binModel = RandomForestClassifier()
             self.sixModel = RandomForestClassifier()
             print('Data loaded')
