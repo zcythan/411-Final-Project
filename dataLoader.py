@@ -47,7 +47,7 @@ class dataLoader:
         data_labels = []
 
         #Keys being used for training
-        key_order = ["statement", "subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
+        keys = ["statement", "subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
 
         for sample in dataset:
             strings = []
@@ -76,7 +76,7 @@ class dataLoader:
                     data_labels.append(label)
 
             # Loop through the keys in the dataset to pick out the needed features.
-            for key in key_order:
+            for key in keys:
                 if key in sample:
                     tensor = sample[key]
 
