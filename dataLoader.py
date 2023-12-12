@@ -1,9 +1,6 @@
 import deeplake
 import threading
-import nltk
 from nltk.corpus import stopwords
-nltk.download('stopwords')
-
 
 class dataLoader:
     def __init__(self, type):
@@ -75,6 +72,8 @@ class dataLoader:
                         data_labels.append(0)
                     elif label in [2, 3]:
                         data_labels.append(1)
+                else:
+                    data_labels.append(label)
 
             # Loop through the keys in the dataset to pick out the needed features.
             for key in key_order:
