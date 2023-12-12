@@ -21,11 +21,17 @@ def index():
         input['context'] = request.form['context']
 
         if input['statement'] != "":
+            try:
+                request.form['binary_classifier']
+                binary_classifier = True
+            except:
+                binary_classifier = False
+
             string_input = ""
             for value in input.values():
                 string_input += value + " "
             print(string_input)
-            result = aimod.predict(string_input)
+            result = aimod.predict(string_input, binary_classifier)
 
     return render_template('index.html', title='Political Deception Detector', states=states, input=input, result=result, nothing=nothing)
 

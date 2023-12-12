@@ -65,6 +65,36 @@ input[type="submit"]:hover {
   font-weight: bold;
 }
 
+.super-false {
+  background-color: red;
+  color: white;
+}
+
+.barely-true {
+  background-color: orange;
+  color: black;
+}
+
+.half-true {
+  background-color: yellow;
+  color: black;
+}
+
+.mostly-true {
+  background-color: lightgreen;
+  color: black;
+}
+
+.completely-true {
+  background-color: green;
+  color: white;
+}
+
+.false {
+  background-color: orangered;
+  color: white;
+}
+
 .falsified {
   background-color: red;
   color: white;
@@ -104,4 +134,13 @@ input[type="submit"]:hover {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container label {
+  margin-right: 10px;
 }
