@@ -41,6 +41,10 @@
               </option>
               {% endfor %}
             </select>
+            <div class="checkbox-container">
+              <label for="binary_classifier">Use Binary Classifier (Accuracy increases, but specifity decreases):</label>
+              <input type="checkbox" id="binary_classifier" name="binary_classifier" checked />
+            </div>
 
             <label for="party">Political Party:</label>
             <select id="party" name="party">
@@ -53,9 +57,21 @@
           </form>
         </div>
         {% if result == 0 %}
-        <div class="output-section truthful">This statement is likely truthful.</div>
-        {% elif result == 1 %}
         <div class="output-section falsified">This statement is likely falsified.</div>
+        {% elif result == 1 %}
+        <div class="output-section truthful">This statement is likely truthful.</div>
+        {% elif result == "Extremely False" %}
+        <div class="output-section super-false">{{ result }}</div>
+        {% elif result == "Barely True" %}
+        <div class="output-section barely-true">{{ result }}</div>
+        {% elif result == "Half True" %}
+        <div class="output-section half-true">{{ result }}</div>
+        {% elif result == "Mostly True" %}
+        <div class="output-section mostly-true">{{ result }}</div>
+        {% elif result == "Completely True" %}
+        <div class="output-section completely-true">{{ result }}</div>
+        {% elif result == "False" %}
+        <div class="output-section false">{{ result }}</div>
         {% else %}
         <div class="output-section"></div>
         {% endif %}
