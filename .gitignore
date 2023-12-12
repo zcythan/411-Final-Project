@@ -245,3 +245,6 @@ tank.test.out
 *.out
 
 trained-ModelSix.joblib
+trained-ModelBin.joblib
+vectorizerBin.joblib
+vectorizerSix.joblib
