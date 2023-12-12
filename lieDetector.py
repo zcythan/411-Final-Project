@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 
+
 class lieDetector:
     def __init__(self):
         # Extract features and labels from training, test, and validation sets
@@ -33,11 +34,11 @@ class lieDetector:
             print('Extraction complete')
             print("Training Model")
             self.model.fit(value_train, np.array(self.dl.trainLabels))
-            accuracy = self.model.score(value_test, np.array(self.dl.testLabels))
+            accuracy = self.model.score(
+                value_test, np.array(self.dl.testLabels))
             print("Accuracy on test set:", accuracy)
             dump(self.model, 'trained-Model.joblib')
             dump(self.vectorizer, 'vectorizer.joblib')
-
 
     def predict(self, inputs):
         processed_input = ' '.join(
@@ -53,8 +54,4 @@ class lieDetector:
         print("Predicting for: " + inputs)
         prediction = self.model.predict(featVecs)
         print(prediction[0])
-        return "This statement is likely falsified." if prediction[0] == 0 else "This statement is likely truthful."
-
-
-
-
+        return prediction[0] == 0
