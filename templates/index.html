@@ -43,14 +43,18 @@
             </select>
             <div class="checkbox-container">
               <label for="binary_classifier">Use Binary Classifier (Accuracy increases, but specifity decreases):</label>
+              {% if checked %}
               <input type="checkbox" id="binary_classifier" name="binary_classifier" checked />
+              {% else %}
+              <input type="checkbox" id="binary_classifier" name="binary_classifier" />
+              {% endif %}
             </div>
 
             <label for="party">Political Party:</label>
             <select id="party" name="party">
               <option value="Republican" {% if input['party'] == 'Republican' %} selected {% endif %}>Republican</option>
               <option value="Democrat" {% if input['party'] == 'Democrat' %} selected {% endif %}>Democrat</option>
-                <option value="None" {% if input['party'] == 'None' %} selected {% endif %}>None</option>
+              <option value="None" {% if input['party'] == 'None' %} selected {% endif %}>None</option>
             </select>
 
             <input type="submit" id="script" name="submit" value="Submit" />
