@@ -1,0 +1,7 @@
+These links allow you to visualize the test and train data sets we used in a web browser:
+https://app.activeloop.ai/activeloop/liar-test
+https://app.activeloop.ai/activeloop/liar-train
+
+The following statements are used to import the datasets in our code: 
+deeplake.load('hub://activeloop/liar-train')
+deeplake.load('hub://activeloop/liar-test')
