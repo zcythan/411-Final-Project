@@ -71,7 +71,7 @@ class lieDetector:
             featStatement = self.sixVectorizer.transform([processed_input])
 
             featVecs = featStatement.toarray()
-            
+
             print("Predicting for: " + inputs)
             prediction = self.sixModel.predict(featVecs)
             print(prediction[0])
