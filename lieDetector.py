@@ -32,12 +32,15 @@ class lieDetector:
             print("This may take up to 5 minutes.")
             self.binVectorizer = TfidfVectorizer()
             self.sixVectorizer = TfidfVectorizer()
-            self.bindl = dataLoader(True)  # Change this false to run 6 label classification.
+            # Change this false to run 6 label classification.
+            self.bindl = dataLoader(True)
             self.sixdl = dataLoader(False)
 
-            binValue_train = self.binVectorizer.fit_transform(self.bindl.packedTrain)
+            binValue_train = self.binVectorizer.fit_transform(
+                self.bindl.packedTrain)
             binValue_test = self.binVectorizer.transform(self.bindl.packedTest)
-            sixValue_train = self.sixVectorizer.fit_transform(self.sixdl.packedTrain)
+            sixValue_train = self.sixVectorizer.fit_transform(
+                self.sixdl.packedTrain)
             sixValue_test = self.sixVectorizer.transform(self.sixdl.packedTest)
             self.binModel = RandomForestClassifier()
             self.sixModel = RandomForestClassifier()
@@ -46,15 +49,16 @@ class lieDetector:
             print("Training Model")
             self.binModel.fit(binValue_train, np.array(self.bindl.trainLabels))
             self.sixModel.fit(sixValue_train, np.array(self.sixdl.trainLabels))
-            accuracy = self.binModel.score(binValue_test, np.array(self.bindl.testLabels))
+            accuracy = self.binModel.score(
+                binValue_test, np.array(self.bindl.testLabels))
             print("Accuracy on binary test set:", accuracy)
-            accuracy = self.sixModel.score(sixValue_test, np.array(self.sixdl.testLabels))
+            accuracy = self.sixModel.score(
+                sixValue_test, np.array(self.sixdl.testLabels))
             print("Accuracy on six-way test set:", accuracy)
             dump(self.binModel, binmodelFile)
             dump(self.sixModel, sixmodelFile)
             dump(self.binVectorizer, binVectFile)
             dump(self.sixVectorizer, sixVectFile)
-
 
     def predict(self, inputs, binary):
         processed_input = ' '.join(
@@ -67,7 +71,7 @@ class lieDetector:
             print("Predicting for: " + inputs)
             prediction = self.binModel.predict(featVecs)
             print(prediction[0])
-            return "This statement is likely falsified." if prediction[0] == 0 else "This statement is likely truthful."
+            return prediction[0]
         else:
             featStatement = self.sixVectorizer.transform([processed_input])
 
@@ -76,8 +80,6 @@ class lieDetector:
             print("Predicting for: " + inputs)
             prediction = self.sixModel.predict(featVecs)
             print(prediction[0])
-            return prediction[0]
-
-
-
-
+            output_list = ["False", "Half True", "Mostly True",
+                           "Completely True", "Barely True", "Extremely False"]
+            return output_list[prediction[0]]
