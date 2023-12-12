@@ -9,7 +9,7 @@ app = Flask(__name__)
 def index():
     result = ""
     input = {}
-
+    binary_classifier = True
     nothing = ""
     if request.method == "POST":
         input['statement'] = request.form['statement']
@@ -33,7 +33,7 @@ def index():
             print(string_input)
             result = aimod.predict(string_input, binary_classifier)
 
-    return render_template('index.html', title='Political Deception Detector', states=states, input=input, result=result, nothing=nothing)
+    return render_template('index.html', title='Political Deception Detector', states=states, checked=binary_classifier, input=input, result=result, nothing=nothing)
 
 
 states = [
