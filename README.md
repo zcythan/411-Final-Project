@@ -28,4 +28,3 @@ context(Where did it come from?): a newspaper commentary
 
 This should check out as a true statement. 
 
-https://app.activeloop.ai/activeloop/liar-test
